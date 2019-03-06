@@ -1,5 +1,5 @@
 Package: gastempt
-Version: 0.4.3
+Version: 0.4.4
 Authors@R: c(
       person("Dieter", "Menne", ,"dieter.menne@menne-biomed.de", c("aut","cre"))
     )
@@ -24,8 +24,8 @@ RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 SystemRequirements: GNU make
-Packaged: 2018-11-09 20:09:04 UTC; dieter
+Packaged: 2019-03-06 13:16:39 UTC; Dieter
 Author: Dieter Menne [aut, cre]
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Repository: CRAN
-Date/Publication: 2018-11-10 15:00:03 UTC
+Date/Publication: 2019-03-06 16:32:41 UTC
