@@ -49,26 +49,12 @@ test_that("Running precompiled models linexp _1x directly returns valid result",
   run_precompiled_model("linexp_gastro_1b", iter = iter)
 })
 
-test_that("Running precompiled models linexp _1x directly returns valid result (", {
-  skip_on_travis()
-  skip_on_cran()
-  run_precompiled_model("linexp_gastro_1c")
-  run_precompiled_model("linexp_gastro_1d")
-})
-
-test_that("Running precompiled linexp models _2x directly returns valid result", {
-  skip_on_travis()
-  skip_on_cran()
-  run_precompiled_model("linexp_gastro_2b")
-  run_precompiled_model("linexp_gastro_2c")
-})
 
 test_that("Running precompiled powexp models directly returns valid result", {
   run_precompiled_model("powexp_gastro_1b")
 })
 
 test_that("Running precompiled powexp models directly returns valid result", {
-  skip_on_travis()
   skip_on_cran()
   run_precompiled_model("powexp_gastro_2c")
 })
@@ -79,8 +65,7 @@ test_that("Running stan_gastempt fit with default parameters returns valid resul
   v0_d = d$rec$v0
   chains = 2 # Problems with more chains on travis
   options(mc.cores = min(parallel::detectCores(), chains))
-  ret = stan_gastempt(d$data, model_name = "linexp_gastro_2b",
-                      chains = chains,  iter = 500, refresh = -1)
+  ret = stan_gastempt(d$data, chains = chains,  iter = 500, refresh = -1)
   expect_is(ret, "stan_gastempt")
   expect_is(ret$plot, "ggplot")
   expect_is(ret$plot, "ggplot")
@@ -117,7 +102,7 @@ test_that("Running stan_gastempt fit with non-default parameters returns valid r
   skip_on_cran()
   d = simulate_gastempt(n_records = 6, seed = 471)
   v0_d = d$rec$v0
-  ret = stan_gastempt(d$data, model_name = "linexp_gastro_2c",
+  ret = stan_gastempt(d$data, model_name = "linexp_gastro_2b",
                       refresh = -1, chains = 2, init_r = 0.3)
   expect_is(ret, "stan_gastempt")
   v0_f = ret$coef$v0
@@ -128,7 +113,7 @@ test_that("Running stan_gastempt with many missing data returns valid result", {
   skip_on_cran()
   d = simulate_gastempt(n_records = 6, missing = 0.3, seed = 471)
   v0_d = d$rec$v0
-  ret = stan_gastempt(d$data, model_name = "linexp_gastro_1c", refresh = -1)
+  ret = stan_gastempt(d$data, model_name = "linexp_gastro_1b", refresh = -1)
   expect_is(ret, "stan_gastempt")
   expect_is(ret$plot, "ggplot")
   expect_s4_class(ret$fit, "stanfit")
@@ -142,7 +127,8 @@ test_that("Running stan_gastempt with many missing data returns valid result", {
 test_that("Direct use of sample model returns valid results", {
   skip("Slow. Only use on errors in other Stan functions.")
   data = gastempt_data()
-  stan_model = "../../exec/linexp_gastro_2b.stan"
+  stan_model = "../../inst/stan/linexp_gastro_2b.stan"
+  print(dir("../../inst/stan/"))
   expect_true(file.exists(stan_model))
   rstan_options(auto_write = TRUE)
   iter = 500
@@ -153,11 +139,9 @@ test_that("Direct use of sample model returns valid results", {
   })
   expect_is(mr_b, "stanfit")
 
-  stan_model = "../../exec/linexp_gastro_1c.stan"
-  mr_c = stan(stan_model, data = data, chains = 4, iter = iter,
-              seed = 4711, refresh = FALSE)
 
-  stan_model = "../../exec/linexp_gastro_1d.stan"
+  stan_model = "../../inst/stan/linexp_gastro_1b.stan"
+  expect_true(file.exists(stan_model))
   mr_d = stan(stan_model, data = data, chains = 4, iter = iter,
               seed = 4711, refresh = FALSE)
 
