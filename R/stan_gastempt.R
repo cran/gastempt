@@ -11,15 +11,16 @@
 #' of available models.
 #' @param lkj LKJ prior for kappa/tempt correlation, only required
 #' for model linexp_gastro_2b. Values from 1.5 (strong correlation) to 50
-#' (almost independent) are useful. See
-#' \url{http://www.psychstatistics.com/2014/12/27/d-lkj-priors/} for examples.
+#' (almost independent) are useful.
 #' @param student_df Student-t degrees of freedom for residual error;
 #' default 5. Use 3 for strong outliers; values above 10 are close to gaussian
 #' residual distribution.
 #' @param init_r for stan, default = 0.2; Stan's own default is 2, which
 #' often results in stuck chains.
-#' @param chains for stan; default = 4. For debugging, use 1.
-#' @param ... Additional parameter passed to \code{sampling}
+#' @param chains for stan; default = 1
+#' @param iter A positive integer specifying the number of iterations for
+#' each chain (including warmup). The default is 2000.
+#' @param ... Additional parameter passed to \code{sampling} and \code{stan}
 #'
 #' @return A list of class stan_gastempt with elements \code{coef, fit, plot}
 #' \itemize{
@@ -33,7 +34,7 @@
 #'       \item \code{beta} Parameter \code{beta} for \code{model = powexp}
 #'       \item \code{t50} Half-time of emptying
 #'       \item \code{slope_t50} Slope in t50; typically in units of ml/minute
-#'  On error, coef is NULL
+#'  On error, \code{coef} is NULL
 #'    }
 #'   \item \code{fit} Result of class `stanfit`
 #'   \item \code{plot} A ggplot graph of data and prediction. Plot of raw data is
@@ -41,17 +42,18 @@
 #'  }
 #' @useDynLib gastempt, .registration = TRUE
 #' @examples
-#' \dontrun{
-#'   dd = simulate_gastempt(n_records = 6, seed = 471)
-#'   d = dd$data
-#'   ret = stan_gastempt(d)
-#'   print(ret$coef)
-#' }
+#' \donttest{
+#'  # Runs 30+ seconds on CRAN
+#'  dd = simulate_gastempt(n_records = 6, seed = 471)
+#'  d = dd$data
+#'  ret = stan_gastempt(d)
+#'  print(ret$coef)
+#'  }
 #' @import rstan
 #' @importFrom utils capture.output
 #' @export
 stan_gastempt = function(d, model_name = "linexp_gastro_2b", lkj = 2,
-                         student_df = 5L, init_r = 0.2, chains = 4,  ...){
+                         student_df = 5L, init_r = 0.2, chains = 1, iter = 2000, ...){
   assert_that(all(c("record", "minute","vol") %in% names(d)))
   . = NULL # keep notes quiet
   is_linexp = grepl("linexp", model_name)
@@ -73,7 +75,7 @@ stan_gastempt = function(d, model_name = "linexp_gastro_2b", lkj = 2,
   capture.output({
     #fit = suppressWarnings(sampling(mod, data = data))
     fit = suppressWarnings(sampling(mod, data = data, init_r = init_r,
-                                    chains = chains))
+                                    chains = chains, iter = iter, ...))
   })
   cf = summary(fit)$summary[,1]
   if (is_linexp){
