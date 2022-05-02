@@ -7,7 +7,7 @@ using namespace Rcpp ;
 RCPP_MODULE(stan_fit4powexp_gastro_2c_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_powexp_gastro_2c")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_powexp_gastro_2c")
 
     .constructor<SEXP,SEXP,SEXP>()
 
